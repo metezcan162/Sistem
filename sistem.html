@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>METE | Resmi Web Sitesi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-main: #070913;
+            --card-bg: rgba(15, 22, 38, 0.88);
+            --accent-cyan: #00dfd8;
+            --accent-pink: #ff007f;
+            --accent-purple: #7928ca;
+            --text-white: #ffffff;
+            --text-dim: #94a3b8;
+        }
+
+        /* Neon Kaydırma Çubuğu */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-main);
+            color: var(--text-white);
+            overflow-x: hidden;
+        }
+
+        /* Arka Plan Izgarası */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(rgba(0, 223, 216, 0.08) 1px, transparent 1px);
+            background-size: 24px 24px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* 5 Saniyelik Yükleme Ekranı */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #030408;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader-title {
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .loader-bar-bg {
+            width: 80%;
+            max-width: 300px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .loader-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-cyan));
+            border-radius: 20px;
+            animation: fillBar 5s linear forwards;
+        }
+
+        @keyframes fillBar {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        /* Üst Bar */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(7, 9, 19, 0.85);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 1000;
+        }
+
+        .menu-toggle {
+            width: 45px;
+            height: 45px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            color: var(--accent-cyan);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .menu-toggle:active { transform: scale(0.92); }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, var(--text-white), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Sol Yan Menü Panel (Ekranın Yarısını Kaplayan) */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 75%;
+            max-width: 320px;
+            height: 100%;
+            background: rgba(10, 14, 26, 0.96);
+            backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 2000;
+            transition: left 0.35s cubic-bezier(0.1, 1, 0.1, 1);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .side-menu.active { left: 0; }
+
+        .close-menu {
+            align-self: flex-end;
+            font-size: 1.5rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 20px;
+            border-radius: 14px;
+            color: var(--text-white);
+            text-decoration: none;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .menu-link.active, .menu-link:hover {
+            background: rgba(0, 223, 216, 0.15);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            transform: translateX(5px);
+        }
+
+        /* Arka Plan Bulanıklığı */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            z-index: 1500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .overlay.active { opacity: 1; pointer-events: all; }
+
+        /* Ana İçerik Konteynırı */
+        .main-container {
+            width: 100%;
+            min-height: 100vh;
+            padding-top: 95px;
+            padding-bottom: 50px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .page-view {
+            width: 100%;
+            max-width: 750px;
+            padding: 0 20px;
+            display: none;
+            animation: fadeIn 0.3s ease forwards;
+        }
+        .page-view.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tam Ekran Kartlar */
+        .full-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .full-card:hover {
+            border-color: rgba(0, 223, 216, 0.3);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.4);
+            cursor: pointer;
+        }
+
+        .social-btn-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .social-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            color: var(--text-white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.25s ease;
+        }
+        .social-item:hover {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 223, 216, 0.1);
+            transform: translateX(6px);
+        }
+
+        .live-clock-box {
+            display: inline-block;
+            background: rgba(0, 223, 216, 0.1);
+            border: 1px solid rgba(0, 223, 216, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        /* Konfeti Efekt Parçaları */
+        .confetti-particle {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            animation: dropConfetti 1.2s ease-out forwards;
+        }
+        @keyframes dropConfetti {
+            0% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+            100% { opacity: 0; transform: translate(var(--vx), var(--vy)) rotate(720deg); }
+        }
+
+        /* Yapay Zeka Yuvarlak Top Butonu */
+        .ai-fab {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 223, 216, 0.5);
+            cursor: pointer;
+            z-index: 1000;
+            animation: pulseBtn 2s infinite alternate;
+        }
+        @keyframes pulseBtn {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.06); }
+        }
+
+        /* Yapay Zeka Sohbet Penceresi */
+        .ai-window {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 80vh;
+            background: rgba(10, 14, 26, 0.97);
+            backdrop-filter: blur(30px);
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            z-index: 2500;
+            transition: bottom 0.35s cubic-bezier(0.1, 1, 0.1, 1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .ai-window.active { bottom: 0; }
+
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 5px;
+        }
+
+        .msg-bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            max-width: 85%;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .msg-bubble.ai { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255,255,255,0.05); align-self: flex-start; }
+        .msg-bubble.user { background: var(--accent-purple); align-self: flex-end; }
+
+        .quick-chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .chip:hover { background: rgba(0, 223, 216, 0.2); }
+
+        .chat-input-box {
+            display: flex;
+            gap: 8px;
+        }
+        .chat-input-box input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px;
+            border-radius: 14px;
+            color: white;
+            outline: none;
+        }
+        
+        .mic-btn {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            border: none;
+            color: white;
+            width: 48px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        
+        .voice-active {
+            animation: voicePulse 1s infinite alternate;
+        }
+        @keyframes voicePulse {
+            0% { transform: scale(1); box-shadow: 0 0 0px #ff007f; }
+            100% { transform: scale(1.1); box-shadow: 0 0 15px #ff007f; }
+        }
+
+        .chat-input-box button.send-btn {
+            background: var(--accent-cyan);
+            border: none;
+            padding: 0 20px;
+            border-radius: 14px;
+            font-weight: 700;
+            color: #000;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .chat-input-box button:active { transform: scale(0.92); }
+
+        /* Live Code Playground */
+        .code-editor-box {
+            width: 100%;
+            height: 120px;
+            background: #020408;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            color: #00dfd8;
+            font-family: monospace;
+            font-size: 0.85rem;
+            outline: none;
+            resize: none;
+            margin-bottom: 10px;
+        }
+        .code-output {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 12px;
+            min-height: 40px;
+            font-size: 0.85rem;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Yükleme Ekranı (5 Saniye) -->
+    <div id="loader">
+        <div class="loader-title" id="loaderText">METE</div>
+        <div class="loader-bar-bg">
+            <div class="loader-bar-fill"></div>
+        </div>
+    </div>
+
+    <!-- Üst Bar -->
+    <header>
+        <div class="menu-toggle" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></div>
+        <div class="brand-title">METE.HUB</div>
+    </header>
+
+    <div class="overlay" id="overlay" onclick="closePanels()"></div>
+
+    <!-- Sol Yan Menü (Ekranın Yarısını Kaplayan) -->
+    <div class="side-menu" id="sideMenu">
+        <div class="close-menu" onclick="toggleMenu()"><i class="fa-solid fa-xmark"></i></div>
+        <div class="menu-link active" onclick="navigate('home')">
+            <i class="fa-solid fa-house"></i>
+            <span>Ana Sayfa</span>
+        </div>
+        <div class="menu-link" onclick="navigate('about')">
+            <i class="fa-solid fa-user"></i>
+            <span>Hakkımda</span>
+        </div>
+        <div class="menu-link" onclick="navigate('coop')">
+            <i class="fa-solid fa-code"></i>
+            <span>Co-Op & Kod</span>
+        </div>
+    </div>
+
+    <!-- TAM EKRAN SAYFALAR -->
+    <div class="main-container">
+        
+        <!-- SAYFA 1: ANA SAYFA -->
+        <div id="home" class="page-view active">
+            <div class="full-card" style="text-align: center;">
+                <div class="live-clock-box" id="liveClock">00:00:00</div>
+                <h1 style="font-size: 1.9rem; margin-bottom: 10px; color: var(--accent-cyan);" id="welcomeMsg">Hoş Geldin!</h1>
+                <p style="color: var(--text-dim); line-height: 1.6;">
+                    Mete'nin web sitesine hoş geldin. Sol üstteki menüden **Hakkımda** sayfasına geçerek tüm sosyal medya hesaplarıma ulaşabilirsin.
+                </p>
+            </div>
+            
+            <div class="full-card">
+                <h3 style="margin-bottom: 12px; color: var(--accent-pink);"><i class="fa-solid fa-fire"></i> Güncel İçerikler</h3>
+                <p style="color: var(--text-dim); line-height: 1.5;">PUBG Mobile heyecanı, mobil kodlama projeleri ve en yeni paylaşımlar burada seni bekliyor.</p>
+            </div>
+        </div>
+
+        <!-- SAYFA 2: HAKKIMDA (SOSYAL MEDYA) -->
+        <div id="about" class="page-view">
+            <div class="full-card" style="text-align: center;">
+                <div class="profile-avatar" onclick="triggerConfetti(event)"><i class="fa-solid fa-gamepad"></i></div>
+                <h2 style="font-size: 1.8rem; font-weight: 800;">METE</h2>
+                <p style="color: var(--accent-cyan); margin-top: 5px;">@metelobloxx</p>
+                <p style="color: var(--text-dim); margin-top: 15px; line-height: 1.5;">
+                    İçerik üreticisi ve mobil geliştirici. Aşağıdaki bağlantılardan resmi hesaplarıma göz atabilirsin.
+                </p>
+            </div>
+
+            <div class="full-card">
+                <h3 style="margin-bottom: 15px;">Sosyal Medya Hesaplarım</h3>
+                <div class="social-btn-list">
+                    <a href="https://instagram.com/mete.zcan" target="_blank" class="social-item">
+                        <span><i class="fa-brands fa-instagram" style="color: #e1306c; margin-right: 12px; font-size: 1.2rem;"></i> Instagram</span>
+                        <span style="color: var(--text-dim); font-size: 0.85rem;">mete.zcan</span>
+                    </a>
+                    <a href="https://tiktok.com/@mete_zcan" target="_blank" class="social-item">
+                        <span><i class="fa-brands fa-tiktok" style="color: #00f2fe; margin-right: 12px; font-size: 1.2rem;"></i> TikTok</span>
+                        <span style="color: var(--text-dim); font-size: 0.85rem;">mete_zcan</span>
+                    </a>
+                    <a href="https://youtube.com/@metelobloxx" target="_blank" class="social-item">
+                        <span><i class="fa-brands fa-youtube" style="color: #ff0000; margin-right: 12px; font-size: 1.2rem;"></i> YouTube</span>
+                        <span style="color: var(--text-dim); font-size: 0.85rem;">metelobloxx</span>
+                    </a>
+                    <a href="https://threads.net/@mete_zcan" target="_blank" class="social-item">
+                        <span><i class="fa-brands fa-threads" style="color: #ffffff; margin-right: 12px; font-size: 1.2rem;"></i> Threads</span>
+                        <span style="color: var(--text-dim); font-size: 0.85rem;">mete.zcan</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SAYFA 3: CO-OP & LIVE KOD ALANI -->
+        <div id="coop" class="page-view">
+            <div class="full-card">
+                <h2 style="color: var(--accent-cyan); margin-bottom: 10px;"><i class="fa-solid fa-code-branch"></i> Live Kod Parkı</h2>
+                <p style="color: var(--text-dim); margin-bottom: 15px;">Aşağıdaki kutuya HTML veya JavaScript kodunu yazıp anında canlı olarak çalıştırabilirsin:</p>
+                
+                <textarea class="code-editor-box" id="codeEditor" placeholder="<h1>Mete Web</h1>"></textarea>
+                <button class="social-item" style="width: 100%; justify-content: center; cursor: pointer; margin-bottom: 15px;" onclick="runLiveCode()">⚡ Kodu Çalıştır</button>
+                
+                <div class="code-output" id="codeOutput">Çıktı burada görünecek...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Yapay Zeka Yuvarlak Butonu -->
+    <div class="ai-fab" onclick="toggleAI()"><i class="fa-solid fa-robot"></i></div>
+
+    <!-- Yapay Zeka Sohbet Penceresi -->
+    <div class="ai-window" id="aiWindow">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3>🤖 Mete AI Asistan (Sesli & Canlı)</h3>
+            <i class="fa-solid fa-xmark" style="font-size: 1.3rem; cursor: pointer;" onclick="toggleAI()"></i>
+        </div>
+        
+        <div class="quick-chips">
+            <div class="chip" onclick="quickAsk('Selam')">👋 Selam</div>
+            <div class="chip" onclick="quickAsk('Mete kimdir')">🎮 Mete Kimdir?</div>
+            <div class="chip" onclick="quickAsk('PUBG taktiği ver')">🎯 PUBG Taktiği</div>
+            <div class="chip" onclick="quickAsk('Kod taktiği')">💻 Kod Taktiği</div>
+        </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="msg-bubble ai">Selam Mete! Siten tamamen hazır. Mikrofona basarak konuşabilir veya mesaj yazabilirsin!</div>
+        </div>
+        <div class="chat-input-box">
+            <button class="mic-btn" id="micBtn" onclick="startVoice()"><i class="fa-solid fa-microphone"></i></button>
+            <input type="text" id="userInput" placeholder="Bir şeyler yaz veya konuş...">
+            <button class="send-btn" onclick="sendAI()">Gönder</button>
+        </div>
+    </div>
+
+    <script>
+        // 5 Saniyelik Yükleme Ekranı Döngüsü
+        const items = ["METE", "PUBG", "mete.zcan", "mete_zcan", "metelobloxx"];
+        let count = 0;
+        const loaderText = document.getElementById('loaderText');
+
+        const timer = setInterval(() => {
+            count = (count + 1) % items.length;
+            loaderText.innerText = items[count];
+        }, 1000);
+
+        setTimeout(() => {
+            clearInterval(timer);
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 500);
+        }, 5000);
+
+        // Canlı Saat & Selamlama Ayarı
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('liveClock').innerText = now.toLocaleTimeString('tr-TR');
+            
+            const hour = now.getHours();
+            let greeting = "Hoş Geldin!";
+            if(hour >= 6 && hour < 12) greeting = "Günaydın!";
+            else if(hour >= 12 && hour < 18) greeting = "İyi Günler!";
+            else if(hour >= 18 && hour < 22) greeting = "İyi Akşamlar!";
+            document.getElementById('welcomeMsg').innerText = greeting;
+        }, 1000);
+
+        // Menü Kontrolleri
+        function toggleMenu() {
+            document.getElementById('sideMenu').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function toggleAI() {
+            document.getElementById('aiWindow').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function closePanels() {
+            document.getElementById('sideMenu').classList.remove('active');
+            document.getElementById('aiWindow').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+        }
+
+        function navigate(pageId) {
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+
+            document.getElementById(pageId).classList.add('active');
+            closePanels();
+        }
+
+        // Konfeti Efekti
+        function triggerConfetti(e) {
+            const x = e ? e.clientX : window.innerWidth / 2;
+            const y = e ? e.clientY : window.innerHeight / 2;
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-particle';
+                confetti.style.left = x + 'px';
+                confetti.style.top = y + 'px';
+                confetti.style.backgroundColor = ['#00dfd8', '#ff007f', '#7928ca', '#ffffff'][Math.floor(Math.random() * 4)];
+                
+                const vx = (Math.random() - 0.5) * 200 + 'px';
+                const vy = (Math.random() - 0.5) * 200 + 'px';
+                confetti.style.setProperty('--vx', vx);
+                confetti.style.setProperty('--vy', vy);
+                
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 1200);
+            }
+        }
+
+        // Live Kod Çalıştırıcı
+        function runLiveCode() {
+            const code = document.getElementById('codeEditor').value;
+            const output = document.getElementById('codeOutput');
+            output.innerHTML = code;
+        }
+
+        // Sesli Tanıma (Speech Recognition)
+        function startVoice() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Tablet tarayıcınız sesli tanılamayı desteklemiyor.");
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'tr-TR';
+
+            const btn = document.getElementById('micBtn');
+            btn.classList.add('voice-active');
+
+            recognition.start();
+
+            recognition.onresult = function(e) {
+                document.getElementById('userInput').value = e.results[0][0].transcript;
+                btn.classList.remove('voice-active');
+                sendAI();
+            };
+
+            recognition.onerror = function() { btn.classList.remove('voice-active'); };
+            recognition.onend = function() { btn.classList.remove('voice-active'); };
+        }
+
+        // Sesli Konuşma (Text-to-Speech)
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'tr-TR';
+                window.speechSynthesis.speak(msg);
+            }
+        }
+
+        // Yapay Zeka Cevap Motoru
+        function quickAsk(text) {
+            document.getElementById('userInput').value = text;
+            sendAI();
+        }
+
+        function sendAI() {
+            const input = document.getElementById('userInput');
+            const chat = document.getElementById('chatArea');
+            const val = input.value.trim();
+
+            if(val !== '') {
+                const uMsg = document.createElement('div');
+                uMsg.className = 'msg-bubble user';
+                uMsg.innerText = val;
+                chat.appendChild(uMsg);
+
+                let reply = "Harika bir soru! Siteni her geçen gün daha da geliştiriyoruz.";
+                const txt = val.toLowerCase();
+
+                if(txt.includes('sa') || txt.includes('selam') || txt.includes('merhaba')) {
+                    reply = "Aleykümselam Hoş Geldin! Bugün hangi kodları yazıyoruz?";
+                } else if(txt.includes('mete kimdir') || txt.includes('sen kimsin')) {
+                    reply = "Mete, tabletiyle kendi web sitesini kuran, PUBG ve yazılım tutkunu harika bir içerik üreticisidir!";
+                } else if(txt.includes('pubg')) {
+                    reply = "PUBG Mobile'da dropları asla boş bırakma ve her zaman yüksek tepeyi kontrol et! 🎯";
+                } else if(txt.includes('kod')) {
+                    reply = "Co-Op sekmesinden canlı kod editörünü kullanıp anında test yapabilirsin!";
+                }
+
+                setTimeout(() => {
+                    const aiMsg = document.createElement('div');
+                    aiMsg.className = 'msg-bubble ai';
+                    aiMsg.innerText = reply;
+                    chat.appendChild(aiMsg);
+                    chat.scrollTop = chat.scrollHeight;
+                    speak(reply); // Yapay zekanın cevabını sesli okur
+                }, 400);
+
+                input.value = '';
+                chat.scrollTop = chat.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
